@@ -50,13 +50,7 @@ class PyXtal(seamm.Node):
     PyXtal, PyXtalParameters
     """
 
-    def __init__(
-        self,
-        flowchart=None,
-        title="PyXtal",
-        extension=None,
-        logger=logger
-    ):
+    def __init__(self, flowchart=None, title="PyXtal", extension=None, logger=logger):
         """A step for PyXtal in a SEAMM flowchart.
 
         You may wish to change the title above, which is the string displayed
