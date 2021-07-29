@@ -1,0 +1,10 @@
+name: seamm-pyxtal
+channels:
+  - conda-forge
+dependencies:
+  - python
+  - pip
+
+    # Executables, etc.
+  - pip:
+      - pyxtal

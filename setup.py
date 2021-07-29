@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 """pyxtal_step
-A SEAMM plugin for A SEAMM plug-in for PyXtal
+A SEAMM plugin for PyXtal for building atomic and molecular crystals.
 """
 import sys
 from setuptools import setup, find_packages
@@ -63,19 +63,22 @@ setup(
     # prevent the .egg from being made
     zip_safe=True,
 
-    keywords=['SEAMM', 'plug-in', 'flowchart'],
+    keywords=['SEAMM', 'plug-in', 'flowchart', 'PyXtal', 'crystals'],
     classifiers=[
-        'Development Status :: 2 - Pre-Alpha',
+        'Development Status :: 5 - Production/Stable',
         'Intended Audience :: Science/Research',
         'Topic :: Scientific/Engineering :: Chemistry',
         'Topic :: Scientific/Engineering :: Physics',
         'License :: OSI Approved :: MIT License',
         'Natural Language :: English',
         'Programming Language :: Python :: 3 :: Only',
-        'Programming Language :: Python :: 3.7',
         'Programming Language :: Python :: 3.8',
+        'Programming Language :: Python :: 3.9',
     ],
     entry_points={
+        'console_scripts': [
+            'pyxtal-step-installer=pyxtal_step.installer:run',
+        ],
         'org.molssi.seamm': [
             'PyXtal = pyxtal_step:PyXtalStep',
         ],
