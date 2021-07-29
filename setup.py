@@ -24,15 +24,15 @@ with open('requirements_install.txt') as fd:
 
 setup(
     name='pyxtal_step',
-    author="Paul Saxe",
-    author_email='psaxe@vt.edu',
+    author="Qiang Zhu",
+    author_email='qiang.zhu@unlv.edu',
     description=__doc__.splitlines()[1],
     long_description=readme + '\n\n' + history,
     long_description_content_type='text/x-rst',
     version=versioneer.get_version(),
     cmdclass=versioneer.get_cmdclass(),
     license="MIT",
-    url='https://github.com/paulsaxe/pyxtal_step',
+    url='https://github.com/qzhu2017/pyxtal_step',
 
     # Which Python importable modules should be included when your package is
     # installed, handled automatically by setuptools. Use 'exclude' to prevent

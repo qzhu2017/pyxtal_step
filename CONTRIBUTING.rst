@@ -15,7 +15,7 @@ Types of Contributions
 Report Bugs
 ~~~~~~~~~~~
 
-Report bugs at https://github.com/paulsaxe/pyxtal_step/issues.
+Report bugs at https://github.com/qzhu2017/pyxtal_step/issues.
 
 If you are reporting a bug, please include:
 
@@ -45,7 +45,7 @@ articles, and such.
 Submit Feedback
 ~~~~~~~~~~~~~~~
 
-The best way to send feedback is to file an issue at https://github.com/paulsaxe/pyxtal_step/issues.
+The best way to send feedback is to file an issue at https://github.com/qzhu2017/pyxtal_step/issues.
 
 If you are proposing a feature:
 
@@ -101,8 +101,8 @@ Before you submit a pull request, check that it meets these guidelines:
 2. If the pull request adds functionality, the docs should be updated. Put
    your new functionality into a function with a docstring, and add the
    feature to the list in README.rst.
-3. The pull request should work for Python 2.6, 2.7, 3.3, 3.4 and 3.5, and for PyPy. Check
-   https://travis-ci.org/paulsaxe/pyxtal_step/pull_requests
+3. The pull request should work for Python 3.8 and 3.9, and for PyPi. Check
+   https://travis-ci.org/qzhu2017/pyxtal_step/pull_requests
    and make sure that the tests pass for all supported Python versions.
 
 Tips
