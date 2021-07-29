@@ -78,14 +78,94 @@ class PyXtalParameters(seamm.Parameters):
     """
 
     parameters = {
-        "time": {
-            "default": 100.0,
-            "kind": "float",
-            "default_units": "ps",
+        "build type": {
+            "default": "atoms",
+            "kind": "enum",
+            "default_units": None,
+            "enumeration": (
+                "atoms",
+                "molecules",
+            ),
+            "format_string": "",
+            "description": "Build using:",
+            "help_text": (
+                "Whether to use atoms of molecules as the basic building block."
+            ),
+        },
+        "dimensionality": {
+            "default": "3-D crystal",
+            "kind": "enum",
+            "default_units": None,
+            "enumeration": (
+                "0-D molecular",
+                "1-D rod",
+                "2-D layer",
+                "3-D crystal",
+            ),
+            "format_string": "",
+            "description": "Dimensionality:",
+            "help_text": (
+                "Whether the desired system is molecular, a rod, layer or 3-D crystal"
+            ),
+        },
+        "symmetry": {
+            "default": "",
+            "kind": "enum",
+            "default_units": None,
             "enumeration": tuple(),
-            "format_string": ".1f",
-            "description": "Simulation time:",
-            "help_text": ("The time to simulate in the dynamics run."),
+            "format_string": "",
+            "description": "Symmetry:",
+            "help_text": (
+                "The symmetry -- point, rod, layer, or space group -- for the system."
+            ),
+        },
+        "formula": {
+            "default": "",
+            "kind": "string",
+            "default_units": None,
+            "enumeration": tuple(),
+            "format_string": "",
+            "description": "Formula:",
+            "help_text": "The chemical formula for the molecule or crystal.",
+        },
+        "n_molecules": {
+            "default": 1,
+            "kind": "integer",
+            "default_units": None,
+            "enumeration": tuple(),
+            "format_string": "",
+            "description": "Number of molecules:",
+            "help_text": "The number of molecules in the final structure.",
+        },
+        "attempts": {
+            "default": 1,
+            "kind": "integer",
+            "default_units": None,
+            "enumeration": tuple(),
+            "format_string": "",
+            "description": "Number of attempts:",
+            "help_text": (
+                "The number of time to try making the structure. "
+                "The number of structures actually generated may be less than this."
+            ),
+        },
+        "thickness": {
+            "default": 5.0,
+            "kind": "float",
+            "default_units": "Å",
+            "enumeration": tuple(),
+            "format_string": "%.2f",
+            "description": "Slab thickness:",
+            "help_text": "The thickness of the generated slab.",
+        },
+        "area": {
+            "default": 25.0,
+            "kind": "float",
+            "default_units": "Å^2",
+            "enumeration": tuple(),
+            "format_string": "%.2f",
+            "description": "Cross-sectional area:",
+            "help_text": "The area of the cross section of the rod.",
         },
     }
 
@@ -110,5 +190,10 @@ class PyXtalParameters(seamm.Parameters):
         logger.debug("PyXtalParameters.__init__")
 
         super().__init__(
-            defaults={**PyXtalParameters.parameters, **defaults}, data=data
+            defaults={
+                **PyXtalParameters.parameters,
+                **seamm.standard_parameters.structure_handling_parameters,
+                **defaults,
+            },
+            data=data,
         )

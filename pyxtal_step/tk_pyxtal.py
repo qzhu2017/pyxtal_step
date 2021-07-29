@@ -4,8 +4,9 @@
 
 import pprint  # noqa: F401
 import tkinter as tk
+import tkinter.ttk as ttk
 
-import pyxtal_step  # noqa: F401
+import pyxtal_step
 import seamm
 from seamm_util import ureg, Q_, units_class  # noqa: F401
 import seamm_widgets as sw
@@ -115,12 +116,60 @@ class TkPyXtal(seamm.TkNode):
         """
 
         frame = super().create_dialog(title="PyXtal")
-        # Shortcut for parameters
-        P = self.node.parameters
+
+        # Create two frames, one for the PyXtal parameters and one for where to put the
+        # structure.
+        frame1 = self["pyxtal frame"] = ttk.LabelFrame(
+            frame,
+            borderwidth=4,
+            relief="sunken",
+            text="Structure definition",
+            labelanchor="n",
+            padding=10,
+        )
+        frame2 = self["handling frame"] = ttk.LabelFrame(
+            frame,
+            borderwidth=4,
+            relief="sunken",
+            text="How to handle the structure",
+            labelanchor="n",
+            padding=10,
+        )
 
         # Then create the widgets
-        for key in P:
-            self[key] = P[key].widget(frame)
+        P = self.node.parameters
+        for key in (
+            "build type",
+            "dimensionality",
+            "symmetry",
+            "formula",
+            "n_molecules",
+            "attempts",
+            "thickness",
+            "area",
+        ):
+            self[key] = P[key].widget(frame1)
+
+        for key in (
+            "structure handling",
+            "subsequent structure handling",
+            "system name",
+            "configuration name",
+        ):
+            self[key] = P[key].widget(frame2)
+
+        # Set bindings
+        for name in ("build type", "dimensionality", "attempts"):
+            combobox = self[name].combobox
+            combobox.bind("<<ComboboxSelected>>", self.reset_dialog)
+            combobox.bind("<Return>", self.reset_dialog)
+            combobox.bind("<FocusOut>", self.reset_dialog)
+
+        # Put in the widgets that are always present
+        frame1.grid(row=0, sticky=tk.EW)
+        frame2.grid(row=1, sticky=tk.EW)
+
+        frame.columnconfigure(0, weight=1)
 
         # and lay them out
         self.reset_dialog()
@@ -148,25 +197,90 @@ class TkPyXtal(seamm.TkNode):
         --------
         TkPyXtal.create_dialog
         """
+        ##########################
+        # Handle the first frame #
+        ##########################
 
         # Remove any widgets previously packed
-        frame = self["frame"]
-        for slave in frame.grid_slaves():
+        frame1 = self["pyxtal frame"]
+        for slave in frame1.grid_slaves():
             slave.grid_forget()
 
-        # Shortcut for parameters
-        P = self.node.parameters
+        # Set the contents of the symmetry pulldowns for the dimensionality
+
+        build_type = self["build type"].get()
+        dimensionality = self["dimensionality"].get()
+        symmetry = self["symmetry"].get()
+
+        if build_type == "atoms":
+            items = ["build type", "dimensionality", "symmetry", "formula", "attempts"]
+        else:
+            items = [
+                "build type",
+                "dimensionality",
+                "symmetry",
+                "n_molecules",
+                "attempts",
+            ]
+
+        if "0-D" in dimensionality:
+            groups = pyxtal_step.point_groups
+        elif "1-D" in dimensionality:
+            groups = pyxtal_step.rod_groups
+            items.append("area")
+        elif "2-D" in dimensionality:
+            groups = pyxtal_step.space_groups
+            items.append("thickness")
+        elif "3-D" in dimensionality:
+            groups = pyxtal_step.space_groups
+        self["symmetry"].combobox.config(values=groups)
+        if symmetry in groups:
+            self["symmetry"].set(symmetry)
+        else:
+            self["symmetry"].set(groups[0])
 
         # keep track of the row in a variable, so that the layout is flexible
         # if e.g. rows are skipped to control such as "method" here
         row = 0
         widgets = []
-        for key in P:
+        for key in items:
             self[key].grid(row=row, column=0, sticky=tk.EW)
             widgets.append(self[key])
             row += 1
 
         # Align the labels
+        sw.align_labels(widgets)
+
+        # Set the widths and expansion
+        frame1.columnconfigure(0, weight=1)
+
+        ###############################
+        # Now handle the second frame #
+        ###############################
+
+        # Remove any widgets previously packed
+        frame2 = self["handling frame"]
+        for slave in frame2.grid_slaves():
+            slave.grid_forget()
+
+        # Grid the needed widgets
+        if self["attempts"].get() == "1":
+            items = ("structure handling", "system name", "configuration name")
+        else:
+            items = (
+                "structure handling",
+                "subsequent structure handling",
+                "system name",
+                "configuration name",
+            )
+
+        widgets = []
+        row = 0
+        for item in items:
+            self[item].grid(row=row, sticky=tk.EW)
+            widgets.append(self[item])
+            row += 1
+        frame2.columnconfigure(0, weight=1)
         sw.align_labels(widgets)
 
     def right_click(self, event):
@@ -190,67 +304,6 @@ class TkPyXtal(seamm.TkNode):
         self.popup_menu.add_command(label="Edit..", command=self.edit)
 
         self.popup_menu.tk_popup(event.x_root, event.y_root, 0)
-
-    def edit(self):
-        """Present a dialog for editing the PyXtal input
-
-        Parameters
-        ----------
-        None
-
-        Returns
-        -------
-        None
-
-        See Also
-        --------
-        TkPyXtal.right_click
-        """
-
-        if self.dialog is None:
-            self.create_dialog()
-
-        self.dialog.activate(geometry="centerscreenfirst")
-
-    def handle_dialog(self, result):
-        """Handle the closing of the edit dialog
-
-        What to do depends on the button used to close the dialog. If
-        the user closes it by clicking the "x" of the dialog window,
-        None is returned, which we take as equivalent to cancel.
-
-        Parameters
-        ----------
-        result : None or str
-            The value of this variable depends on what the button
-            the user clicked.
-
-        Returns
-        -------
-        None
-        """
-
-        if result is None or result == "Cancel":
-            self.dialog.deactivate(result)
-            return
-
-        if result == "Help":
-            # display help!!!
-            return
-
-        if result != "OK":
-            self.dialog.deactivate(result)
-            raise RuntimeError(f"Don't recognize dialog result '{result}'")
-
-        self.dialog.deactivate(result)
-        # Shortcut for parameters
-        P = self.node.parameters
-
-        # Get the values for all the widgets. This may be overkill, but
-        # it is easy! You can sort out what it all means later, or
-        # be a bit more selective.
-        for key in P:
-            P[key].set_from_widget()
 
     def handle_help(self):
         """Shows the help to the user when click on help button.

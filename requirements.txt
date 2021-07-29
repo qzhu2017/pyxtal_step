@@ -1,4 +1,4 @@
-Pmw
+chemical-formula
 seamm
 seamm-util
 seamm-widgets

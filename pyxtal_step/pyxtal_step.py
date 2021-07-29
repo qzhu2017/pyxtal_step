@@ -29,7 +29,7 @@ class PyXtalStep(object):
 
     my_description = {
         "description": "An interface for PyXtal",
-        "group": "Simulations",
+        "group": "Building",
         "name": "PyXtal",
     }
 

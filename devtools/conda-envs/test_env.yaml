@@ -23,6 +23,8 @@ dependencies:
   
   # Pip-only installs
   - pip:
+    - chemical-formula
+
     # Documentation
     - rinohtype
     - sphinx-rtd-theme
